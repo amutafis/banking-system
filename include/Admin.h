@@ -3,20 +3,16 @@
 
 #include "Person.h"
 
-namespace banking {
-
 class Admin : public Person {
 public:
     Admin(int id,
-          std::string firstName,
-          std::string lastName,
-          std::string egn,
-          std::string email,
-          std::string phone);
+          string firstName,
+          string lastName,
+          string egn,
+          string email,
+          string phone);
 
-    std::string role() const override;
+    string role() const override;
 };
-
-} // namespace banking
 
 #endif

@@ -1,14 +1,13 @@
 #include "Person.h"
 #include <iostream>
-
-namespace banking {
+using namespace std;
 
 Person::Person(int id,
-               std::string firstName,
-               std::string lastName,
-               std::string egn,
-               std::string email,
-               std::string phone) {
+               string firstName,
+               string lastName,
+               string egn,
+               string email,
+               string phone) {
     this->id = id;
     this->firstName = firstName;
     this->lastName = lastName;
@@ -18,23 +17,21 @@ Person::Person(int id,
 }
 
 int Person::getId() const { return id; }
-std::string Person::getFirstName() const { return firstName; }
-std::string Person::getLastName() const { return lastName; }
-std::string Person::getEgn() const { return egn; }
-std::string Person::getEmail() const { return email; }
-std::string Person::getPhone() const { return phone; }
+string Person::getFirstName() const { return firstName; }
+string Person::getLastName() const { return lastName; }
+string Person::getEgn() const { return egn; }
+string Person::getEmail() const { return email; }
+string Person::getPhone() const { return phone; }
 
-void Person::setFirstName(std::string v) { firstName = v; }
-void Person::setLastName(std::string v) { lastName = v; }
-void Person::setEmail(std::string v) { email = v; }
-void Person::setPhone(std::string v) { phone = v; }
+void Person::setFirstName(string v) { firstName = v; }
+void Person::setLastName(string v) { lastName = v; }
+void Person::setEmail(string v) { email = v; }
+void Person::setPhone(string v) { phone = v; }
 
 void Person::print() const {
-    std::cout << "[" << role() << "] #" << id
-              << " " << firstName << " " << lastName
-              << " | EGN: " << egn
-              << " | email: " << email
-              << " | tel: " << phone << "\n";
+    cout << "[" << role() << "] #" << id
+         << " " << firstName << " " << lastName
+         << " | EGN: " << egn
+         << " | email: " << email
+         << " | tel: " << phone << "\n";
 }
-
-} // namespace banking

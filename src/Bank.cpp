@@ -1,7 +1,6 @@
 #include "Bank.h"
 #include <iostream>
-
-namespace banking {
+using namespace std;
 
 Bank::Bank() {
     nextCustomerId = 1;
@@ -9,11 +8,11 @@ Bank::Bank() {
 
 // ---------- Customer CRUD ----------
 
-int Bank::createCustomer(std::string firstName,
-                         std::string lastName,
-                         std::string egn,
-                         std::string email,
-                         std::string phone) {
+int Bank::createCustomer(string firstName,
+                         string lastName,
+                         string egn,
+                         string email,
+                         string phone) {
     int newId = nextCustomerId;
     nextCustomerId = nextCustomerId + 1;
 
@@ -32,10 +31,10 @@ int Bank::findCustomerIndex(int id) const {
 }
 
 bool Bank::updateCustomer(int id,
-                          std::string firstName,
-                          std::string lastName,
-                          std::string email,
-                          std::string phone) {
+                          string firstName,
+                          string lastName,
+                          string email,
+                          string phone) {
     int idx = findCustomerIndex(id);
     if (idx == -1) return false;
 
@@ -65,7 +64,7 @@ bool Bank::deleteCustomer(int id) {
 
 void Bank::listCustomers() const {
     if (customers.size() == 0) {
-        std::cout << "(няма регистрирани клиенти)\n";
+        cout << "(няма регистрирани клиенти)\n";
         return;
     }
     for (int i = 0; i < (int)customers.size(); i++) {
@@ -77,7 +76,7 @@ void Bank::listCustomers() const {
 void Bank::printCustomer(int id) const {
     int idx = findCustomerIndex(id);
     if (idx == -1) {
-        std::cout << "Не е намерен клиент с ID #" << id << "\n";
+        cout << "Не е намерен клиент с ID #" << id << "\n";
         return;
     }
     customers[idx].print();
@@ -85,10 +84,10 @@ void Bank::printCustomer(int id) const {
 
 // ---------- Account CRUD ----------
 
-bool Bank::createAccount(std::string iban,
+bool Bank::createAccount(string iban,
                          int ownerId,
                          double initialBalance,
-                         std::string currency) {
+                         string currency) {
     if (findCustomerIndex(ownerId) == -1) return false;
     if (findAccountIndex(iban) != -1)     return false;
 
@@ -97,7 +96,7 @@ bool Bank::createAccount(std::string iban,
     return true;
 }
 
-int Bank::findAccountIndex(std::string iban) const {
+int Bank::findAccountIndex(string iban) const {
     for (int i = 0; i < (int)accounts.size(); i++) {
         if (accounts[i].getIban() == iban) {
             return i;
@@ -106,14 +105,14 @@ int Bank::findAccountIndex(std::string iban) const {
     return -1;
 }
 
-bool Bank::updateAccountStatus(std::string iban, int newStatus) {
+bool Bank::updateAccountStatus(string iban, int newStatus) {
     int idx = findAccountIndex(iban);
     if (idx == -1) return false;
     accounts[idx].setStatus(newStatus);
     return true;
 }
 
-bool Bank::deleteAccount(std::string iban) {
+bool Bank::deleteAccount(string iban) {
     int idx = findAccountIndex(iban);
     if (idx == -1) return false;
     accounts.erase(accounts.begin() + idx);
@@ -122,7 +121,7 @@ bool Bank::deleteAccount(std::string iban) {
 
 void Bank::listAccounts() const {
     if (accounts.size() == 0) {
-        std::cout << "(няма сметки)\n";
+        cout << "(няма сметки)\n";
         return;
     }
     for (int i = 0; i < (int)accounts.size(); i++) {
@@ -130,10 +129,10 @@ void Bank::listAccounts() const {
     }
 }
 
-void Bank::printAccount(std::string iban) const {
+void Bank::printAccount(string iban) const {
     int idx = findAccountIndex(iban);
     if (idx == -1) {
-        std::cout << "Не е намерена сметка с IBAN " << iban << "\n";
+        cout << "Не е намерена сметка с IBAN " << iban << "\n";
         return;
     }
     accounts[idx].print();
@@ -148,8 +147,6 @@ void Bank::listAccountsOfCustomer(int ownerId) const {
         }
     }
     if (!any) {
-        std::cout << "(клиент #" << ownerId << " няма сметки)\n";
+        cout << "(клиент #" << ownerId << " няма сметки)\n";
     }
 }
-
-} // namespace banking

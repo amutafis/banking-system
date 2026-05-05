@@ -2,8 +2,7 @@
 #define ACCOUNT_H
 
 #include <string>
-
-namespace banking {
+using namespace std;
 
 enum AccountStatus {
     ACTIVE = 0,
@@ -11,27 +10,27 @@ enum AccountStatus {
     CLOSED = 2
 };
 
-std::string statusToString(int status);
+string statusToString(int status);
 
 class Account {
 private:
-    std::string iban;
+    string iban;
     int ownerId;
     double balance;
-    std::string currency;
+    string currency;
     int status;
 
 public:
-    Account(std::string iban,
+    Account(string iban,
             int ownerId,
             double balance,
-            std::string currency,
+            string currency,
             int status);
 
-    std::string getIban() const;
+    string getIban() const;
     int getOwnerId() const;
     double getBalance() const;
-    std::string getCurrency() const;
+    string getCurrency() const;
     int getStatus() const;
 
     void setBalance(double v);
@@ -39,7 +38,5 @@ public:
 
     void print() const;
 };
-
-} // namespace banking
 
 #endif

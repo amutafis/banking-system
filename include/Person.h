@@ -2,47 +2,44 @@
 #define PERSON_H
 
 #include <string>
-
-namespace banking {
+using namespace std;
 
 class Person {
 protected:
     int id;
-    std::string firstName;
-    std::string lastName;
-    std::string egn;
-    std::string email;
-    std::string phone;
+    string firstName;
+    string lastName;
+    string egn;
+    string email;
+    string phone;
 
 public:
     Person(int id,
-           std::string firstName,
-           std::string lastName,
-           std::string egn,
-           std::string email,
-           std::string phone);
+           string firstName,
+           string lastName,
+           string egn,
+           string email,
+           string phone);
 
     virtual ~Person() {}
 
     int getId() const;
-    std::string getFirstName() const;
-    std::string getLastName() const;
-    std::string getEgn() const;
-    std::string getEmail() const;
-    std::string getPhone() const;
+    string getFirstName() const;
+    string getLastName() const;
+    string getEgn() const;
+    string getEmail() const;
+    string getPhone() const;
 
-    void setFirstName(std::string v);
-    void setLastName(std::string v);
-    void setEmail(std::string v);
-    void setPhone(std::string v);
+    void setFirstName(string v);
+    void setLastName(string v);
+    void setEmail(string v);
+    void setPhone(string v);
 
     // Чисто виртуален -> Person е абстрактен клас.
-    virtual std::string role() const = 0;
+    virtual string role() const = 0;
 
     // Виртуален -> викането става полиморфно през Person*.
     virtual void print() const;
 };
-
-} // namespace banking
 
 #endif

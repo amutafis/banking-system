@@ -6,52 +6,49 @@
 
 #include <string>
 #include <vector>
-
-namespace banking {
+using namespace std;
 
 class Bank {
 private:
-    std::vector<Customer> customers;
-    std::vector<Account> accounts;
+    vector<Customer> customers;
+    vector<Account> accounts;
     int nextCustomerId;
 
 public:
     Bank();
 
     // ----- Customer CRUD -----
-    int createCustomer(std::string firstName,
-                       std::string lastName,
-                       std::string egn,
-                       std::string email,
-                       std::string phone);
+    int createCustomer(string firstName,
+                       string lastName,
+                       string egn,
+                       string email,
+                       string phone);
 
     int findCustomerIndex(int id) const;
 
     bool updateCustomer(int id,
-                        std::string firstName,
-                        std::string lastName,
-                        std::string email,
-                        std::string phone);
+                        string firstName,
+                        string lastName,
+                        string email,
+                        string phone);
 
     bool deleteCustomer(int id);
     void listCustomers() const;
     void printCustomer(int id) const;
 
     // ----- Account CRUD -----
-    bool createAccount(std::string iban,
+    bool createAccount(string iban,
                        int ownerId,
                        double initialBalance,
-                       std::string currency);
+                       string currency);
 
-    int findAccountIndex(std::string iban) const;
+    int findAccountIndex(string iban) const;
 
-    bool updateAccountStatus(std::string iban, int newStatus);
-    bool deleteAccount(std::string iban);
+    bool updateAccountStatus(string iban, int newStatus);
+    bool deleteAccount(string iban);
     void listAccounts() const;
-    void printAccount(std::string iban) const;
+    void printAccount(string iban) const;
     void listAccountsOfCustomer(int ownerId) const;
 };
-
-} // namespace banking
 
 #endif

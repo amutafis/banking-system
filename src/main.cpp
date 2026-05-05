@@ -6,59 +6,58 @@
 #include <iostream>
 #include <limits>
 #include <string>
-
-using namespace banking;
+using namespace std;
 
 void clearLine() {
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
-std::string readString(std::string label) {
-    std::cout << label << ": ";
-    std::string s;
-    std::getline(std::cin, s);
+string readString(string label) {
+    cout << label << ": ";
+    string s;
+    getline(cin, s);
     return s;
 }
 
-int readInt(std::string label) {
-    std::cout << label << ": ";
+int readInt(string label) {
+    cout << label << ": ";
     int x;
-    while (!(std::cin >> x)) {
-        std::cin.clear();
+    while (!(cin >> x)) {
+        cin.clear();
         clearLine();
-        std::cout << "Невалиден вход. " << label << ": ";
+        cout << "Невалиден вход. " << label << ": ";
     }
     clearLine();
     return x;
 }
 
-double readDouble(std::string label) {
-    std::cout << label << ": ";
+double readDouble(string label) {
+    cout << label << ": ";
     double x;
-    while (!(std::cin >> x)) {
-        std::cin.clear();
+    while (!(cin >> x)) {
+        cin.clear();
         clearLine();
-        std::cout << "Невалиден вход. " << label << ": ";
+        cout << "Невалиден вход. " << label << ": ";
     }
     clearLine();
     return x;
 }
 
 void printMenu() {
-    std::cout << "\n=== Banking System (Checkpoint 2) ===\n";
-    std::cout << " 1. Създай клиент\n";
-    std::cout << " 2. Покажи всички клиенти\n";
-    std::cout << " 3. Намери клиент по ID\n";
-    std::cout << " 4. Редактирай клиент\n";
-    std::cout << " 5. Изтрий клиент\n";
-    std::cout << " 6. Създай сметка\n";
-    std::cout << " 7. Покажи всички сметки\n";
-    std::cout << " 8. Намери сметка по IBAN\n";
-    std::cout << " 9. Промени статус на сметка\n";
-    std::cout << "10. Изтрий сметка\n";
-    std::cout << "11. Сметки на конкретен клиент\n";
-    std::cout << "12. Демонстрация на полиморфизъм (Customer + Admin)\n";
-    std::cout << " 0. Изход\n";
+    cout << "\n=== Banking System (Checkpoint 2) ===\n";
+    cout << " 1. Създай клиент\n";
+    cout << " 2. Покажи всички клиенти\n";
+    cout << " 3. Намери клиент по ID\n";
+    cout << " 4. Редактирай клиент\n";
+    cout << " 5. Изтрий клиент\n";
+    cout << " 6. Създай сметка\n";
+    cout << " 7. Покажи всички сметки\n";
+    cout << " 8. Намери сметка по IBAN\n";
+    cout << " 9. Промени статус на сметка\n";
+    cout << "10. Изтрий сметка\n";
+    cout << "11. Сметки на конкретен клиент\n";
+    cout << "12. Демонстрация на полиморфизъм (Customer + Admin)\n";
+    cout << " 0. Изход\n";
 }
 
 void seed(Bank& bank) {
@@ -80,7 +79,7 @@ void demoPolymorphism() {
     people[0] = &c;
     people[1] = &a;
 
-    std::cout << "\n--- Полиморфно print() през Person* ---\n";
+    cout << "\n--- Полиморфно print() през Person* ---\n";
     for (int i = 0; i < 2; i++) {
         people[i]->print();
     }
@@ -95,17 +94,17 @@ int main() {
         int choice = readInt("Избор");
 
         if (choice == 0) {
-            std::cout << "Чао.\n";
+            cout << "Чао.\n";
             return 0;
         }
         else if (choice == 1) {
-            std::string fn   = readString("Име");
-            std::string ln   = readString("Фамилия");
-            std::string egn  = readString("ЕГН");
-            std::string mail = readString("Имейл");
-            std::string tel  = readString("Телефон");
+            string fn   = readString("Име");
+            string ln   = readString("Фамилия");
+            string egn  = readString("ЕГН");
+            string mail = readString("Имейл");
+            string tel  = readString("Телефон");
             int newId = bank.createCustomer(fn, ln, egn, mail, tel);
-            std::cout << "Създаден клиент с ID #" << newId << "\n";
+            cout << "Създаден клиент с ID #" << newId << "\n";
         }
         else if (choice == 2) {
             bank.listCustomers();
@@ -116,59 +115,59 @@ int main() {
         }
         else if (choice == 4) {
             int id = readInt("ID на клиент");
-            std::string fn   = readString("Ново име");
-            std::string ln   = readString("Нова фамилия");
-            std::string mail = readString("Нов имейл");
-            std::string tel  = readString("Нов телефон");
+            string fn   = readString("Ново име");
+            string ln   = readString("Нова фамилия");
+            string mail = readString("Нов имейл");
+            string tel  = readString("Нов телефон");
             if (bank.updateCustomer(id, fn, ln, mail, tel)) {
-                std::cout << "Обновено.\n";
+                cout << "Обновено.\n";
             } else {
-                std::cout << "Не е намерен.\n";
+                cout << "Не е намерен.\n";
             }
         }
         else if (choice == 5) {
             int id = readInt("ID на клиент за изтриване");
             if (bank.deleteCustomer(id)) {
-                std::cout << "Изтрит (заедно със сметките му).\n";
+                cout << "Изтрит (заедно със сметките му).\n";
             } else {
-                std::cout << "Не е намерен.\n";
+                cout << "Не е намерен.\n";
             }
         }
         else if (choice == 6) {
-            std::string iban = readString("IBAN");
+            string iban = readString("IBAN");
             int    id  = readInt("ID на собственик");
             double bal = readDouble("Начален баланс");
             if (bank.createAccount(iban, id, bal, "EUR")) {
-                std::cout << "Сметката е създадена.\n";
+                cout << "Сметката е създадена.\n";
             } else {
-                std::cout << "Грешка: невалиден собственик или дубликат IBAN.\n";
+                cout << "Грешка: невалиден собственик или дубликат IBAN.\n";
             }
         }
         else if (choice == 7) {
             bank.listAccounts();
         }
         else if (choice == 8) {
-            std::string iban = readString("IBAN");
+            string iban = readString("IBAN");
             bank.printAccount(iban);
         }
         else if (choice == 9) {
-            std::string iban = readString("IBAN");
-            std::cout << "Статус: 0=ACTIVE, 1=BLOCKED, 2=CLOSED\n";
+            string iban = readString("IBAN");
+            cout << "Статус: 0=ACTIVE, 1=BLOCKED, 2=CLOSED\n";
             int s = readInt("Нов статус");
             if (s < 0 || s > 2) {
-                std::cout << "Невалиден статус.\n";
+                cout << "Невалиден статус.\n";
             } else if (bank.updateAccountStatus(iban, s)) {
-                std::cout << "Обновен статус.\n";
+                cout << "Обновен статус.\n";
             } else {
-                std::cout << "Не е намерена.\n";
+                cout << "Не е намерена.\n";
             }
         }
         else if (choice == 10) {
-            std::string iban = readString("IBAN за изтриване");
+            string iban = readString("IBAN за изтриване");
             if (bank.deleteAccount(iban)) {
-                std::cout << "Изтрита.\n";
+                cout << "Изтрита.\n";
             } else {
-                std::cout << "Не е намерена.\n";
+                cout << "Не е намерена.\n";
             }
         }
         else if (choice == 11) {
@@ -179,7 +178,7 @@ int main() {
             demoPolymorphism();
         }
         else {
-            std::cout << "Невалиден избор.\n";
+            cout << "Невалиден избор.\n";
         }
     }
 }
