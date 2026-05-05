@@ -1,14 +1,17 @@
-#pragma once
+#ifndef ACCOUNT_H
+#define ACCOUNT_H
 
 #include <string>
 
-enum class AccountStatus {
-    ACTIVE,
-    BLOCKED,
-    CLOSED
+namespace banking {
+
+enum AccountStatus {
+    ACTIVE = 0,
+    BLOCKED = 1,
+    CLOSED = 2
 };
 
-std::string toString(AccountStatus s);
+std::string statusToString(int status);
 
 class Account {
 private:
@@ -16,23 +19,27 @@ private:
     int ownerId;
     double balance;
     std::string currency;
-    AccountStatus status;
+    int status;
 
 public:
     Account(std::string iban,
             int ownerId,
-            double balance = 0.0,
-            std::string currency = "EUR",
-            AccountStatus status = AccountStatus::ACTIVE);
+            double balance,
+            std::string currency,
+            int status);
 
-    const std::string& getIban() const;
+    std::string getIban() const;
     int getOwnerId() const;
     double getBalance() const;
-    const std::string& getCurrency() const;
-    AccountStatus getStatus() const;
+    std::string getCurrency() const;
+    int getStatus() const;
 
     void setBalance(double v);
-    void setStatus(AccountStatus s);
+    void setStatus(int s);
 
     void print() const;
 };
+
+} // namespace banking
+
+#endif

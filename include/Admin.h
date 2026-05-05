@@ -1,6 +1,9 @@
-#pragma once
+#ifndef ADMIN_H
+#define ADMIN_H
 
 #include "Person.h"
+
+namespace banking {
 
 class Admin : public Person {
 public:
@@ -13,3 +16,7 @@ public:
 
     std::string role() const override;
 };
+
+} // namespace banking
+
+#endif

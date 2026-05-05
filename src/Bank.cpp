@@ -1,134 +1,155 @@
 #include "Bank.h"
-
-#include <algorithm>
 #include <iostream>
+
+namespace banking {
+
+Bank::Bank() {
+    nextCustomerId = 1;
+}
 
 // ---------- Customer CRUD ----------
 
-Customer* Bank::createCustomer(const std::string& firstName,
-                               const std::string& lastName,
-                               const std::string& egn,
-                               const std::string& email,
-                               const std::string& phone) {
-    auto c = std::make_unique<Customer>(nextCustomerId++,
-                                        firstName, lastName, egn, email, phone);
-    Customer* raw = c.get();
-    customers.push_back(std::move(c));
-    return raw;
+int Bank::createCustomer(std::string firstName,
+                         std::string lastName,
+                         std::string egn,
+                         std::string email,
+                         std::string phone) {
+    int newId = nextCustomerId;
+    nextCustomerId = nextCustomerId + 1;
+
+    Customer c(newId, firstName, lastName, egn, email, phone);
+    customers.push_back(c);
+    return newId;
 }
 
-Customer* Bank::findCustomer(int id) {
-    for (auto& c : customers) {
-        if (c->getId() == id) return c.get();
+int Bank::findCustomerIndex(int id) const {
+    for (int i = 0; i < (int)customers.size(); i++) {
+        if (customers[i].getId() == id) {
+            return i;
+        }
     }
-    return nullptr;
-}
-
-const Customer* Bank::findCustomer(int id) const {
-    for (const auto& c : customers) {
-        if (c->getId() == id) return c.get();
-    }
-    return nullptr;
+    return -1;
 }
 
 bool Bank::updateCustomer(int id,
-                          const std::string& firstName,
-                          const std::string& lastName,
-                          const std::string& email,
-                          const std::string& phone) {
-    Customer* c = findCustomer(id);
-    if (!c) return false;
-    c->setFirstName(firstName);
-    c->setLastName(lastName);
-    c->setEmail(email);
-    c->setPhone(phone);
+                          std::string firstName,
+                          std::string lastName,
+                          std::string email,
+                          std::string phone) {
+    int idx = findCustomerIndex(id);
+    if (idx == -1) return false;
+
+    customers[idx].setFirstName(firstName);
+    customers[idx].setLastName(lastName);
+    customers[idx].setEmail(email);
+    customers[idx].setPhone(phone);
     return true;
 }
 
 bool Bank::deleteCustomer(int id) {
-    auto it = std::find_if(customers.begin(), customers.end(),
-                           [id](const std::unique_ptr<Customer>& c) {
-                               return c->getId() == id;
-                           });
-    if (it == customers.end()) return false;
+    int idx = findCustomerIndex(id);
+    if (idx == -1) return false;
 
-    // Премахни и всички сметки на този клиент.
-    accounts.erase(std::remove_if(accounts.begin(), accounts.end(),
-                                  [id](const Account& a) {
-                                      return a.getOwnerId() == id;
-                                  }),
-                   accounts.end());
-    customers.erase(it);
+    // Първо премахваме всички сметки на този клиент.
+    for (int i = 0; i < (int)accounts.size(); ) {
+        if (accounts[i].getOwnerId() == id) {
+            accounts.erase(accounts.begin() + i);
+        } else {
+            i++;
+        }
+    }
+
+    customers.erase(customers.begin() + idx);
     return true;
 }
 
 void Bank::listCustomers() const {
-    if (customers.empty()) {
+    if (customers.size() == 0) {
         std::cout << "(няма регистрирани клиенти)\n";
         return;
     }
-    for (const auto& c : customers) c->print();
+    for (int i = 0; i < (int)customers.size(); i++) {
+        // Полиморфно викане: print() от Person ползва role() от Customer.
+        customers[i].print();
+    }
+}
+
+void Bank::printCustomer(int id) const {
+    int idx = findCustomerIndex(id);
+    if (idx == -1) {
+        std::cout << "Не е намерен клиент с ID #" << id << "\n";
+        return;
+    }
+    customers[idx].print();
 }
 
 // ---------- Account CRUD ----------
 
-Account* Bank::createAccount(const std::string& iban,
-                             int ownerId,
-                             double initialBalance,
-                             const std::string& currency) {
-    if (findCustomer(ownerId) == nullptr) return nullptr;
-    if (findAccount(iban) != nullptr)     return nullptr;
+bool Bank::createAccount(std::string iban,
+                         int ownerId,
+                         double initialBalance,
+                         std::string currency) {
+    if (findCustomerIndex(ownerId) == -1) return false;
+    if (findAccountIndex(iban) != -1)     return false;
 
-    accounts.emplace_back(iban, ownerId, initialBalance, currency, AccountStatus::ACTIVE);
-    return &accounts.back();
-}
-
-Account* Bank::findAccount(const std::string& iban) {
-    for (auto& a : accounts) {
-        if (a.getIban() == iban) return &a;
-    }
-    return nullptr;
-}
-
-const Account* Bank::findAccount(const std::string& iban) const {
-    for (const auto& a : accounts) {
-        if (a.getIban() == iban) return &a;
-    }
-    return nullptr;
-}
-
-bool Bank::updateAccountStatus(const std::string& iban, AccountStatus newStatus) {
-    Account* a = findAccount(iban);
-    if (!a) return false;
-    a->setStatus(newStatus);
+    Account a(iban, ownerId, initialBalance, currency, ACTIVE);
+    accounts.push_back(a);
     return true;
 }
 
-bool Bank::deleteAccount(const std::string& iban) {
-    auto it = std::find_if(accounts.begin(), accounts.end(),
-                           [&iban](const Account& a) {
-                               return a.getIban() == iban;
-                           });
-    if (it == accounts.end()) return false;
-    accounts.erase(it);
+int Bank::findAccountIndex(std::string iban) const {
+    for (int i = 0; i < (int)accounts.size(); i++) {
+        if (accounts[i].getIban() == iban) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool Bank::updateAccountStatus(std::string iban, int newStatus) {
+    int idx = findAccountIndex(iban);
+    if (idx == -1) return false;
+    accounts[idx].setStatus(newStatus);
+    return true;
+}
+
+bool Bank::deleteAccount(std::string iban) {
+    int idx = findAccountIndex(iban);
+    if (idx == -1) return false;
+    accounts.erase(accounts.begin() + idx);
     return true;
 }
 
 void Bank::listAccounts() const {
-    if (accounts.empty()) {
+    if (accounts.size() == 0) {
         std::cout << "(няма сметки)\n";
         return;
     }
-    for (const auto& a : accounts) a.print();
+    for (int i = 0; i < (int)accounts.size(); i++) {
+        accounts[i].print();
+    }
+}
+
+void Bank::printAccount(std::string iban) const {
+    int idx = findAccountIndex(iban);
+    if (idx == -1) {
+        std::cout << "Не е намерена сметка с IBAN " << iban << "\n";
+        return;
+    }
+    accounts[idx].print();
 }
 
 void Bank::listAccountsOfCustomer(int ownerId) const {
     bool any = false;
-    for (const auto& a : accounts) {
-        if (a.getOwnerId() == ownerId) {
-            a.print();
+    for (int i = 0; i < (int)accounts.size(); i++) {
+        if (accounts[i].getOwnerId() == ownerId) {
+            accounts[i].print();
             any = true;
         }
     }
-    if (!any) std::cout << "(клиент #" << ownerId << " няма сметки)\n";
+    if (!any) {
+        std::cout << "(клиент #" << ownerId << " няма сметки)\n";
+    }
 }
+
+} // namespace banking

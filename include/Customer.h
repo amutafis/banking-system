@@ -1,6 +1,9 @@
-#pragma once
+#ifndef CUSTOMER_H
+#define CUSTOMER_H
 
 #include "Person.h"
+
+namespace banking {
 
 class Customer : public Person {
 public:
@@ -13,3 +16,7 @@ public:
 
     std::string role() const override;
 };
+
+} // namespace banking
+
+#endif

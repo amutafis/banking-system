@@ -1,4 +1,5 @@
 #include "Account.h"
+#include "Admin.h"
 #include "Bank.h"
 #include "Customer.h"
 
@@ -6,20 +7,20 @@
 #include <limits>
 #include <string>
 
-namespace {
+using namespace banking;
 
 void clearLine() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-std::string prompt(const std::string& label) {
+std::string readString(std::string label) {
     std::cout << label << ": ";
     std::string s;
     std::getline(std::cin, s);
     return s;
 }
 
-int promptInt(const std::string& label) {
+int readInt(std::string label) {
     std::cout << label << ": ";
     int x;
     while (!(std::cin >> x)) {
@@ -31,7 +32,7 @@ int promptInt(const std::string& label) {
     return x;
 }
 
-double promptDouble(const std::string& label) {
+double readDouble(std::string label) {
     std::cout << label << ": ";
     double x;
     while (!(std::cin >> x)) {
@@ -44,31 +45,46 @@ double promptDouble(const std::string& label) {
 }
 
 void printMenu() {
-    std::cout << "\n=== Banking System (Checkpoint 2) ===\n"
-              << " 1. Създай клиент\n"
-              << " 2. Покажи всички клиенти\n"
-              << " 3. Намери клиент по ID\n"
-              << " 4. Редактирай клиент\n"
-              << " 5. Изтрий клиент\n"
-              << " 6. Създай сметка\n"
-              << " 7. Покажи всички сметки\n"
-              << " 8. Намери сметка по IBAN\n"
-              << " 9. Промени статус на сметка\n"
-              << "10. Изтрий сметка\n"
-              << "11. Сметки на конкретен клиент\n"
-              << " 0. Изход\n";
+    std::cout << "\n=== Banking System (Checkpoint 2) ===\n";
+    std::cout << " 1. Създай клиент\n";
+    std::cout << " 2. Покажи всички клиенти\n";
+    std::cout << " 3. Намери клиент по ID\n";
+    std::cout << " 4. Редактирай клиент\n";
+    std::cout << " 5. Изтрий клиент\n";
+    std::cout << " 6. Създай сметка\n";
+    std::cout << " 7. Покажи всички сметки\n";
+    std::cout << " 8. Намери сметка по IBAN\n";
+    std::cout << " 9. Промени статус на сметка\n";
+    std::cout << "10. Изтрий сметка\n";
+    std::cout << "11. Сметки на конкретен клиент\n";
+    std::cout << "12. Демонстрация на полиморфизъм (Customer + Admin)\n";
+    std::cout << " 0. Изход\n";
 }
 
 void seed(Bank& bank) {
-    Customer* c1 = bank.createCustomer("Иван", "Петров",
-                                       "9001011234", "ivan@example.com", "0888111222");
-    Customer* c2 = bank.createCustomer("Мария", "Георгиева",
-                                       "9505052345", "maria@example.com", "0888333444");
-    bank.createAccount("BG80BNBG12345678901234", c1->getId(), 1500.0, "EUR");
-    bank.createAccount("BG80BNBG99999999999999", c2->getId(), 250.0,  "EUR");
+    bank.createCustomer("Иван", "Петров", "9001011234",
+                        "ivan@example.com", "0888111222");
+    bank.createCustomer("Мария", "Георгиева", "9505052345",
+                        "maria@example.com", "0888333444");
+    bank.createAccount("BG80BNBG12345678901234", 1, 1500.0, "EUR");
+    bank.createAccount("BG80BNBG99999999999999", 2, 250.0, "EUR");
 }
 
-} // namespace
+// Демонстрация на полиморфизъм: масив от Person*, който съдържа
+// и Customer, и Admin, а print() избира правилния role() автоматично.
+void demoPolymorphism() {
+    Customer c(101, "Тест", "Клиент", "0000000000", "c@x.com", "0888");
+    Admin    a(202, "Тест", "Админ",  "0000000001", "a@x.com", "0877");
+
+    Person* people[2];
+    people[0] = &c;
+    people[1] = &a;
+
+    std::cout << "\n--- Полиморфно print() през Person* ---\n";
+    for (int i = 0; i < 2; i++) {
+        people[i]->print();
+    }
+}
 
 int main() {
     Bank bank;
@@ -76,89 +92,94 @@ int main() {
 
     while (true) {
         printMenu();
-        int choice = promptInt("Избор");
+        int choice = readInt("Избор");
 
-        switch (choice) {
-            case 0:
-                std::cout << "Чао.\n";
-                return 0;
-
-            case 1: {
-                auto fn   = prompt("Име");
-                auto ln   = prompt("Фамилия");
-                auto egn  = prompt("ЕГН");
-                auto mail = prompt("Имейл");
-                auto tel  = prompt("Телефон");
-                Customer* c = bank.createCustomer(fn, ln, egn, mail, tel);
-                std::cout << "Създаден клиент с ID #" << c->getId() << "\n";
-                break;
+        if (choice == 0) {
+            std::cout << "Чао.\n";
+            return 0;
+        }
+        else if (choice == 1) {
+            std::string fn   = readString("Име");
+            std::string ln   = readString("Фамилия");
+            std::string egn  = readString("ЕГН");
+            std::string mail = readString("Имейл");
+            std::string tel  = readString("Телефон");
+            int newId = bank.createCustomer(fn, ln, egn, mail, tel);
+            std::cout << "Създаден клиент с ID #" << newId << "\n";
+        }
+        else if (choice == 2) {
+            bank.listCustomers();
+        }
+        else if (choice == 3) {
+            int id = readInt("ID на клиент");
+            bank.printCustomer(id);
+        }
+        else if (choice == 4) {
+            int id = readInt("ID на клиент");
+            std::string fn   = readString("Ново име");
+            std::string ln   = readString("Нова фамилия");
+            std::string mail = readString("Нов имейл");
+            std::string tel  = readString("Нов телефон");
+            if (bank.updateCustomer(id, fn, ln, mail, tel)) {
+                std::cout << "Обновено.\n";
+            } else {
+                std::cout << "Не е намерен.\n";
             }
-            case 2:
-                bank.listCustomers();
-                break;
-            case 3: {
-                int id = promptInt("ID на клиент");
-                if (Customer* c = bank.findCustomer(id)) c->print();
-                else std::cout << "Не е намерен.\n";
-                break;
+        }
+        else if (choice == 5) {
+            int id = readInt("ID на клиент за изтриване");
+            if (bank.deleteCustomer(id)) {
+                std::cout << "Изтрит (заедно със сметките му).\n";
+            } else {
+                std::cout << "Не е намерен.\n";
             }
-            case 4: {
-                int id    = promptInt("ID на клиент");
-                auto fn   = prompt("Ново име");
-                auto ln   = prompt("Нова фамилия");
-                auto mail = prompt("Нов имейл");
-                auto tel  = prompt("Нов телефон");
-                std::cout << (bank.updateCustomer(id, fn, ln, mail, tel)
-                              ? "Обновено.\n" : "Не е намерен.\n");
-                break;
+        }
+        else if (choice == 6) {
+            std::string iban = readString("IBAN");
+            int    id  = readInt("ID на собственик");
+            double bal = readDouble("Начален баланс");
+            if (bank.createAccount(iban, id, bal, "EUR")) {
+                std::cout << "Сметката е създадена.\n";
+            } else {
+                std::cout << "Грешка: невалиден собственик или дубликат IBAN.\n";
             }
-            case 5: {
-                int id = promptInt("ID на клиент за изтриване");
-                std::cout << (bank.deleteCustomer(id)
-                              ? "Изтрит (заедно със сметките му).\n"
-                              : "Не е намерен.\n");
-                break;
+        }
+        else if (choice == 7) {
+            bank.listAccounts();
+        }
+        else if (choice == 8) {
+            std::string iban = readString("IBAN");
+            bank.printAccount(iban);
+        }
+        else if (choice == 9) {
+            std::string iban = readString("IBAN");
+            std::cout << "Статус: 0=ACTIVE, 1=BLOCKED, 2=CLOSED\n";
+            int s = readInt("Нов статус");
+            if (s < 0 || s > 2) {
+                std::cout << "Невалиден статус.\n";
+            } else if (bank.updateAccountStatus(iban, s)) {
+                std::cout << "Обновен статус.\n";
+            } else {
+                std::cout << "Не е намерена.\n";
             }
-            case 6: {
-                auto iban = prompt("IBAN");
-                int    id = promptInt("ID на собственик");
-                double bal = promptDouble("Начален баланс");
-                Account* a = bank.createAccount(iban, id, bal, "EUR");
-                std::cout << (a ? "Сметката е създадена.\n"
-                                : "Грешка: невалиден собственик или дубликат IBAN.\n");
-                break;
+        }
+        else if (choice == 10) {
+            std::string iban = readString("IBAN за изтриване");
+            if (bank.deleteAccount(iban)) {
+                std::cout << "Изтрита.\n";
+            } else {
+                std::cout << "Не е намерена.\n";
             }
-            case 7:
-                bank.listAccounts();
-                break;
-            case 8: {
-                auto iban = prompt("IBAN");
-                if (const Account* a = bank.findAccount(iban)) a->print();
-                else std::cout << "Не е намерена.\n";
-                break;
-            }
-            case 9: {
-                auto iban = prompt("IBAN");
-                std::cout << "Статус: 0=ACTIVE, 1=BLOCKED, 2=CLOSED\n";
-                int s = promptInt("Нов статус");
-                if (s < 0 || s > 2) { std::cout << "Невалиден статус.\n"; break; }
-                std::cout << (bank.updateAccountStatus(iban, static_cast<AccountStatus>(s))
-                              ? "Обновен статус.\n" : "Не е намерена.\n");
-                break;
-            }
-            case 10: {
-                auto iban = prompt("IBAN за изтриване");
-                std::cout << (bank.deleteAccount(iban)
-                              ? "Изтрита.\n" : "Не е намерена.\n");
-                break;
-            }
-            case 11: {
-                int id = promptInt("ID на клиент");
-                bank.listAccountsOfCustomer(id);
-                break;
-            }
-            default:
-                std::cout << "Невалиден избор.\n";
+        }
+        else if (choice == 11) {
+            int id = readInt("ID на клиент");
+            bank.listAccountsOfCustomer(id);
+        }
+        else if (choice == 12) {
+            demoPolymorphism();
+        }
+        else {
+            std::cout << "Невалиден избор.\n";
         }
     }
 }

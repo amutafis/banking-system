@@ -1,6 +1,9 @@
-#pragma once
+#ifndef PERSON_H
+#define PERSON_H
 
 #include <string>
+
+namespace banking {
 
 class Person {
 protected:
@@ -19,20 +22,27 @@ public:
            std::string email,
            std::string phone);
 
-    virtual ~Person() = default;
+    virtual ~Person() {}
 
     int getId() const;
-    const std::string& getFirstName() const;
-    const std::string& getLastName() const;
-    const std::string& getEgn() const;
-    const std::string& getEmail() const;
-    const std::string& getPhone() const;
+    std::string getFirstName() const;
+    std::string getLastName() const;
+    std::string getEgn() const;
+    std::string getEmail() const;
+    std::string getPhone() const;
 
-    void setFirstName(const std::string& v);
-    void setLastName(const std::string& v);
-    void setEmail(const std::string& v);
-    void setPhone(const std::string& v);
+    void setFirstName(std::string v);
+    void setLastName(std::string v);
+    void setEmail(std::string v);
+    void setPhone(std::string v);
 
+    // Чисто виртуален -> Person е абстрактен клас.
     virtual std::string role() const = 0;
+
+    // Виртуален -> викането става полиморфно през Person*.
     virtual void print() const;
 };
+
+} // namespace banking
+
+#endif

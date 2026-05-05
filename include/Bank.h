@@ -1,50 +1,57 @@
-#pragma once
+#ifndef BANK_H
+#define BANK_H
 
 #include "Account.h"
 #include "Customer.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
+namespace banking {
+
 class Bank {
 private:
-    std::vector<std::unique_ptr<Customer>> customers;
+    std::vector<Customer> customers;
     std::vector<Account> accounts;
-    int nextCustomerId = 1;
+    int nextCustomerId;
 
 public:
-    // ----- Customer CRUD -----
-    Customer* createCustomer(const std::string& firstName,
-                             const std::string& lastName,
-                             const std::string& egn,
-                             const std::string& email,
-                             const std::string& phone);
+    Bank();
 
-    Customer*       findCustomer(int id);
-    const Customer* findCustomer(int id) const;
+    // ----- Customer CRUD -----
+    int createCustomer(std::string firstName,
+                       std::string lastName,
+                       std::string egn,
+                       std::string email,
+                       std::string phone);
+
+    int findCustomerIndex(int id) const;
 
     bool updateCustomer(int id,
-                        const std::string& firstName,
-                        const std::string& lastName,
-                        const std::string& email,
-                        const std::string& phone);
+                        std::string firstName,
+                        std::string lastName,
+                        std::string email,
+                        std::string phone);
 
     bool deleteCustomer(int id);
     void listCustomers() const;
+    void printCustomer(int id) const;
 
     // ----- Account CRUD -----
-    Account* createAccount(const std::string& iban,
-                           int ownerId,
-                           double initialBalance = 0.0,
-                           const std::string& currency = "EUR");
+    bool createAccount(std::string iban,
+                       int ownerId,
+                       double initialBalance,
+                       std::string currency);
 
-    Account*       findAccount(const std::string& iban);
-    const Account* findAccount(const std::string& iban) const;
+    int findAccountIndex(std::string iban) const;
 
-    bool updateAccountStatus(const std::string& iban, AccountStatus newStatus);
-
-    bool deleteAccount(const std::string& iban);
+    bool updateAccountStatus(std::string iban, int newStatus);
+    bool deleteAccount(std::string iban);
     void listAccounts() const;
+    void printAccount(std::string iban) const;
     void listAccountsOfCustomer(int ownerId) const;
 };
+
+} // namespace banking
+
+#endif

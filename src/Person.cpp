@@ -1,32 +1,33 @@
 #include "Person.h"
-
 #include <iostream>
-#include <utility>
+
+namespace banking {
 
 Person::Person(int id,
                std::string firstName,
                std::string lastName,
                std::string egn,
                std::string email,
-               std::string phone)
-    : id(id),
-      firstName(std::move(firstName)),
-      lastName(std::move(lastName)),
-      egn(std::move(egn)),
-      email(std::move(email)),
-      phone(std::move(phone)) {}
+               std::string phone) {
+    this->id = id;
+    this->firstName = firstName;
+    this->lastName = lastName;
+    this->egn = egn;
+    this->email = email;
+    this->phone = phone;
+}
 
 int Person::getId() const { return id; }
-const std::string& Person::getFirstName() const { return firstName; }
-const std::string& Person::getLastName() const { return lastName; }
-const std::string& Person::getEgn() const { return egn; }
-const std::string& Person::getEmail() const { return email; }
-const std::string& Person::getPhone() const { return phone; }
+std::string Person::getFirstName() const { return firstName; }
+std::string Person::getLastName() const { return lastName; }
+std::string Person::getEgn() const { return egn; }
+std::string Person::getEmail() const { return email; }
+std::string Person::getPhone() const { return phone; }
 
-void Person::setFirstName(const std::string& v) { firstName = v; }
-void Person::setLastName(const std::string& v) { lastName = v; }
-void Person::setEmail(const std::string& v) { email = v; }
-void Person::setPhone(const std::string& v) { phone = v; }
+void Person::setFirstName(std::string v) { firstName = v; }
+void Person::setLastName(std::string v) { lastName = v; }
+void Person::setEmail(std::string v) { email = v; }
+void Person::setPhone(std::string v) { phone = v; }
 
 void Person::print() const {
     std::cout << "[" << role() << "] #" << id
@@ -35,3 +36,5 @@ void Person::print() const {
               << " | email: " << email
               << " | tel: " << phone << "\n";
 }
+
+} // namespace banking
