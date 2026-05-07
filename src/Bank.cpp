@@ -1,9 +1,26 @@
 #include "Bank.h"
 #include <iostream>
+#include <ctime>
 using namespace std;
 
 Bank::Bank() {
     nextCustomerId = 1;
+}
+
+// Връща текущи дата/час като "Wed May  7 14:23:11 2026" (стандартен формат от ctime).
+static string currentTimestamp() {
+    time_t now = time(0);
+    string ts = ctime(&now);
+    // ctime добавя \n на края — махаме го.
+    if (ts.size() > 0 && ts[ts.size() - 1] == '\n') {
+        ts = ts.substr(0, ts.size() - 1);
+    }
+    return ts;
+}
+
+void Bank::logTransaction(string iban, string type, double amount, string description) {
+    Transaction t(iban, type, amount, description, currentTimestamp());
+    transactions.push_back(t);
 }
 
 // ---------- Customer CRUD ----------
@@ -68,7 +85,6 @@ void Bank::listCustomers() const {
         return;
     }
     for (int i = 0; i < (int)customers.size(); i++) {
-        // Полиморфно викане: print() от Person ползва role() от Customer.
         customers[i].print();
     }
 }
@@ -148,5 +164,70 @@ void Bank::listAccountsOfCustomer(int ownerId) const {
     }
     if (!any) {
         cout << "(клиент #" << ownerId << " няма сметки)\n";
+    }
+}
+
+// ---------- Операции по сметка ----------
+
+bool Bank::deposit(string iban, double amount) {
+    if (amount <= 0) return false;
+
+    int idx = findAccountIndex(iban);
+    if (idx == -1) return false;
+    if (accounts[idx].getStatus() != ACTIVE) return false;
+
+    accounts[idx].setBalance(accounts[idx].getBalance() + amount);
+    logTransaction(iban, "DEPOSIT", amount, "Депозит");
+    return true;
+}
+
+bool Bank::withdraw(string iban, double amount) {
+    if (amount <= 0) return false;
+
+    int idx = findAccountIndex(iban);
+    if (idx == -1) return false;
+    if (accounts[idx].getStatus() != ACTIVE) return false;
+    if (accounts[idx].getBalance() < amount) return false;
+
+    accounts[idx].setBalance(accounts[idx].getBalance() - amount);
+    logTransaction(iban, "WITHDRAW", amount, "Теглене");
+    return true;
+}
+
+// ---------- История на транзакции ----------
+
+void Bank::listAllTransactions() const {
+    if (transactions.size() == 0) {
+        cout << "(няма транзакции)\n";
+        return;
+    }
+    for (int i = 0; i < (int)transactions.size(); i++) {
+        transactions[i].print();
+    }
+}
+
+void Bank::listTransactionsOfAccount(string iban) const {
+    bool any = false;
+    for (int i = 0; i < (int)transactions.size(); i++) {
+        if (transactions[i].getIban() == iban) {
+            transactions[i].print();
+            any = true;
+        }
+    }
+    if (!any) {
+        cout << "(няма транзакции за " << iban << ")\n";
+    }
+}
+
+void Bank::listTransactionsOfAccountByType(string iban, string type) const {
+    bool any = false;
+    for (int i = 0; i < (int)transactions.size(); i++) {
+        if (transactions[i].getIban() == iban && transactions[i].getType() == type) {
+            transactions[i].print();
+            any = true;
+        }
+    }
+    if (!any) {
+        cout << "(няма транзакции от тип " << type << " за " << iban << ")\n";
     }
 }

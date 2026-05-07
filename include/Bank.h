@@ -3,6 +3,7 @@
 
 #include "Account.h"
 #include "Customer.h"
+#include "Transaction.h"
 
 #include <string>
 #include <vector>
@@ -12,7 +13,11 @@ class Bank {
 private:
     vector<Customer> customers;
     vector<Account> accounts;
+    vector<Transaction> transactions;
     int nextCustomerId;
+
+    // Помощни — записва транзакция с текущ timestamp.
+    void logTransaction(string iban, string type, double amount, string description);
 
 public:
     Bank();
@@ -49,6 +54,15 @@ public:
     void listAccounts() const;
     void printAccount(string iban) const;
     void listAccountsOfCustomer(int ownerId) const;
+
+    // ----- Операции по сметка -----
+    bool deposit(string iban, double amount);
+    bool withdraw(string iban, double amount);
+
+    // ----- История на транзакции -----
+    void listAllTransactions() const;
+    void listTransactionsOfAccount(string iban) const;
+    void listTransactionsOfAccountByType(string iban, string type) const;
 };
 
 #endif
