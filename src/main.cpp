@@ -56,7 +56,12 @@ void printMenu() {
     cout << " 9. Промени статус на сметка\n";
     cout << "10. Изтрий сметка\n";
     cout << "11. Сметки на конкретен клиент\n";
-    cout << "12. Демонстрация на полиморфизъм (Customer + Admin)\n";
+    cout << "12. Депозит\n";
+    cout << "13. Теглене\n";
+    cout << "14. Покажи всички транзакции\n";
+    cout << "15. История на сметка\n";
+    cout << "16. История на сметка по тип (DEPOSIT / WITHDRAW)\n";
+    cout << "17. Демонстрация на полиморфизъм (Customer + Admin)\n";
     cout << " 0. Изход\n";
 }
 
@@ -175,6 +180,36 @@ int main() {
             bank.listAccountsOfCustomer(id);
         }
         else if (choice == 12) {
+            string iban  = readString("IBAN на сметка");
+            double amount = readDouble("Сума");
+            if (bank.deposit(iban, amount)) {
+                cout << "Депозит успешен.\n";
+            } else {
+                cout << "Грешка (несъществуваща / неактивна сметка или невалидна сума).\n";
+            }
+        }
+        else if (choice == 13) {
+            string iban  = readString("IBAN на сметка");
+            double amount = readDouble("Сума");
+            if (bank.withdraw(iban, amount)) {
+                cout << "Тегленето е успешно.\n";
+            } else {
+                cout << "Грешка (недостатъчни средства, неактивна сметка или невалидна сума).\n";
+            }
+        }
+        else if (choice == 14) {
+            bank.listAllTransactions();
+        }
+        else if (choice == 15) {
+            string iban = readString("IBAN");
+            bank.listTransactionsOfAccount(iban);
+        }
+        else if (choice == 16) {
+            string iban = readString("IBAN");
+            string type = readString("Тип (DEPOSIT / WITHDRAW)");
+            bank.listTransactionsOfAccountByType(iban, type);
+        }
+        else if (choice == 17) {
             demoPolymorphism();
         }
         else {
