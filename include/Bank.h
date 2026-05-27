@@ -76,6 +76,10 @@ public:
     void listTransactionsOfAccount(string iban) const;
     void listTransactionsOfAccountByType(string iban, string type) const;
 
+    // ----- Извлечение (statement) -----
+    // Печата извлечение за дадена сметка: начален баланс, всички движения, краен баланс.
+    bool printStatement(string iban) const;
+
     // ----- Карти -----
     string issueCard(string iban, string type);  // връща новия номер или "" при грешка
     bool blockCard(string cardNumber);

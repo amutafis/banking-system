@@ -281,6 +281,55 @@ void Bank::listTransactionsOfAccountByType(string iban, string type) const {
     }
 }
 
+// ---------- Извлечение ----------
+
+bool Bank::printStatement(string iban) const {
+    int idx = findAccountIndex(iban);
+    if (idx == -1) return false;
+
+    double closing = accounts[idx].getBalance();
+
+    // Изчислява нетното движение от транзакциите за тази сметка.
+    // Положителни: DEPOSIT, TRANSFER_IN.
+    // Отрицателни: WITHDRAW, TRANSFER_OUT, EXTERNAL_OUT.
+    double netMovement = 0;
+    for (int i = 0; i < (int)transactions.size(); i++) {
+        if (transactions[i].getIban() != iban) continue;
+        string t = transactions[i].getType();
+        double a = transactions[i].getAmount();
+        if (t == "DEPOSIT" || t == "TRANSFER_IN") {
+            netMovement = netMovement + a;
+        } else {
+            netMovement = netMovement - a;
+        }
+    }
+    double opening = closing - netMovement;
+
+    cout << "\n=== ИЗВЛЕЧЕНИЕ ===\n";
+    cout << "Сметка: " << iban << "\n";
+    cout << "Собственик #" << accounts[idx].getOwnerId() << "\n";
+    cout << "Валута: " << accounts[idx].getCurrency() << "\n";
+    cout << "Статус: " << statusToString(accounts[idx].getStatus()) << "\n";
+    cout << "------------------\n";
+    cout << "Начален баланс: " << opening << "\n";
+    cout << "Движения:\n";
+
+    bool any = false;
+    for (int i = 0; i < (int)transactions.size(); i++) {
+        if (transactions[i].getIban() == iban) {
+            cout << "  ";
+            transactions[i].print();
+            any = true;
+        }
+    }
+    if (!any) cout << "  (няма движения)\n";
+
+    cout << "------------------\n";
+    cout << "Краен баланс:   " << closing << "\n";
+    cout << "==================\n";
+    return true;
+}
+
 // ---------- Карти ----------
 
 string Bank::issueCard(string iban, string type) {
