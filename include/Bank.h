@@ -2,6 +2,7 @@
 #define BANK_H
 
 #include "Account.h"
+#include "Card.h"
 #include "Customer.h"
 #include "Transaction.h"
 
@@ -14,10 +15,15 @@ private:
     vector<Customer> customers;
     vector<Account> accounts;
     vector<Transaction> transactions;
+    vector<Card> cards;
     int nextCustomerId;
+    int nextCardSerial;  // за уникален номер на карта
 
     // Помощни — записва транзакция с текущ timestamp.
     void logTransaction(string iban, string type, double amount, string description);
+
+    // Генерира 16-цифрен номер на карта (детерминистично за демо).
+    string generateCardNumber();
 
 public:
     Bank();
@@ -63,6 +69,14 @@ public:
     void listAllTransactions() const;
     void listTransactionsOfAccount(string iban) const;
     void listTransactionsOfAccountByType(string iban, string type) const;
+
+    // ----- Карти -----
+    string issueCard(string iban, string type);  // връща новия номер или "" при грешка
+    bool blockCard(string cardNumber);
+    bool unblockCard(string cardNumber);
+    void listCards() const;
+    void listCardsOfAccount(string iban) const;
+    int  findCardIndex(string cardNumber) const;
 };
 
 #endif

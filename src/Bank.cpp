@@ -5,6 +5,20 @@ using namespace std;
 
 Bank::Bank() {
     nextCustomerId = 1;
+    nextCardSerial = 1000;
+}
+
+// Генерира номер на карта от вида "4000000000001000".
+string Bank::generateCardNumber() {
+    string prefix = "4000000000000000";
+    string serial = to_string(nextCardSerial);
+    nextCardSerial = nextCardSerial + 1;
+    // Заменяме последните цифри със serial.
+    int startPos = prefix.size() - serial.size();
+    for (int i = 0; i < (int)serial.size(); i++) {
+        prefix[startPos + i] = serial[i];
+    }
+    return prefix;
 }
 
 // Връща текущи дата/час като "Wed May  7 14:23:11 2026" (стандартен формат от ctime).
@@ -229,5 +243,63 @@ void Bank::listTransactionsOfAccountByType(string iban, string type) const {
     }
     if (!any) {
         cout << "(няма транзакции от тип " << type << " за " << iban << ")\n";
+    }
+}
+
+// ---------- Карти ----------
+
+string Bank::issueCard(string iban, string type) {
+    if (findAccountIndex(iban) == -1) return "";
+    if (type != "DEBIT" && type != "VIRTUAL") return "";
+
+    string number = generateCardNumber();
+    Card c(number, iban, type, "12/29", "123", CARD_ACTIVE);
+    cards.push_back(c);
+    return number;
+}
+
+int Bank::findCardIndex(string cardNumber) const {
+    for (int i = 0; i < (int)cards.size(); i++) {
+        if (cards[i].getCardNumber() == cardNumber) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool Bank::blockCard(string cardNumber) {
+    int idx = findCardIndex(cardNumber);
+    if (idx == -1) return false;
+    cards[idx].setStatus(CARD_BLOCKED);
+    return true;
+}
+
+bool Bank::unblockCard(string cardNumber) {
+    int idx = findCardIndex(cardNumber);
+    if (idx == -1) return false;
+    cards[idx].setStatus(CARD_ACTIVE);
+    return true;
+}
+
+void Bank::listCards() const {
+    if (cards.size() == 0) {
+        cout << "(няма издадени карти)\n";
+        return;
+    }
+    for (int i = 0; i < (int)cards.size(); i++) {
+        cards[i].print();
+    }
+}
+
+void Bank::listCardsOfAccount(string iban) const {
+    bool any = false;
+    for (int i = 0; i < (int)cards.size(); i++) {
+        if (cards[i].getAccountIban() == iban) {
+            cards[i].print();
+            any = true;
+        }
+    }
+    if (!any) {
+        cout << "(сметка " << iban << " няма карти)\n";
     }
 }
