@@ -2,6 +2,7 @@
 #define BANK_H
 
 #include "Account.h"
+#include "Admin.h"
 #include "Card.h"
 #include "Customer.h"
 #include "Transaction.h"
@@ -13,10 +14,12 @@ using namespace std;
 class Bank {
 private:
     vector<Customer> customers;
+    vector<Admin> admins;
     vector<Account> accounts;
     vector<Transaction> transactions;
     vector<Card> cards;
     int nextCustomerId;
+    int nextAdminId;
     int nextCardSerial;  // за уникален номер на карта
 
     // Помощни — записва транзакция с текущ timestamp.
@@ -46,6 +49,19 @@ public:
     bool deleteCustomer(int id);
     void listCustomers() const;
     void printCustomer(int id) const;
+
+    // ----- Admin -----
+    int createAdmin(string firstName,
+                    string lastName,
+                    string egn,
+                    string email,
+                    string phone);
+    int findAdminIndex(int id) const;
+    void listAdmins() const;
+
+    // ----- Помощни -----
+    // Връща ownerId на сметка по IBAN, или -1 ако сметката не съществува.
+    int getAccountOwnerId(string iban) const;
 
     // ----- Account CRUD -----
     bool createAccount(string iban,

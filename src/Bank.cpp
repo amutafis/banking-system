@@ -5,6 +5,7 @@ using namespace std;
 
 Bank::Bank() {
     nextCustomerId = 1;
+    nextAdminId = 9001;  // админи започват от 9001 за да се различават от клиенти
     nextCardSerial = 1000;
 }
 
@@ -110,6 +111,48 @@ void Bank::printCustomer(int id) const {
         return;
     }
     customers[idx].print();
+}
+
+// ---------- Admin ----------
+
+int Bank::createAdmin(string firstName,
+                      string lastName,
+                      string egn,
+                      string email,
+                      string phone) {
+    int newId = nextAdminId;
+    nextAdminId = nextAdminId + 1;
+
+    Admin a(newId, firstName, lastName, egn, email, phone);
+    admins.push_back(a);
+    return newId;
+}
+
+int Bank::findAdminIndex(int id) const {
+    for (int i = 0; i < (int)admins.size(); i++) {
+        if (admins[i].getId() == id) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void Bank::listAdmins() const {
+    if (admins.size() == 0) {
+        cout << "(няма регистрирани администратори)\n";
+        return;
+    }
+    for (int i = 0; i < (int)admins.size(); i++) {
+        admins[i].print();
+    }
+}
+
+// ---------- Помощни ----------
+
+int Bank::getAccountOwnerId(string iban) const {
+    int idx = findAccountIndex(iban);
+    if (idx == -1) return -1;
+    return accounts[idx].getOwnerId();
 }
 
 // ---------- Account CRUD ----------
