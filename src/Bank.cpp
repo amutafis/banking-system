@@ -208,6 +208,41 @@ bool Bank::withdraw(string iban, double amount) {
     return true;
 }
 
+// ---------- Преводи ----------
+
+bool Bank::transferInternal(string fromIban, string toIban, double amount) {
+    if (amount <= 0) return false;
+    if (fromIban == toIban) return false;
+
+    int fromIdx = findAccountIndex(fromIban);
+    int toIdx   = findAccountIndex(toIban);
+    if (fromIdx == -1 || toIdx == -1) return false;
+    if (accounts[fromIdx].getStatus() != ACTIVE) return false;
+    if (accounts[toIdx].getStatus() != ACTIVE)   return false;
+    if (accounts[fromIdx].getBalance() < amount) return false;
+
+    accounts[fromIdx].setBalance(accounts[fromIdx].getBalance() - amount);
+    accounts[toIdx].setBalance(accounts[toIdx].getBalance() + amount);
+
+    logTransaction(fromIban, "TRANSFER_OUT", amount, "Превод към " + toIban);
+    logTransaction(toIban,   "TRANSFER_IN",  amount, "Превод от " + fromIban);
+    return true;
+}
+
+bool Bank::transferExternal(string fromIban, string toIban, double amount) {
+    if (amount <= 0) return false;
+    if (toIban.size() == 0) return false;
+
+    int fromIdx = findAccountIndex(fromIban);
+    if (fromIdx == -1) return false;
+    if (accounts[fromIdx].getStatus() != ACTIVE) return false;
+    if (accounts[fromIdx].getBalance() < amount) return false;
+
+    accounts[fromIdx].setBalance(accounts[fromIdx].getBalance() - amount);
+    logTransaction(fromIban, "EXTERNAL_OUT", amount, "Външен превод към " + toIban);
+    return true;
+}
+
 // ---------- История на транзакции ----------
 
 void Bank::listAllTransactions() const {

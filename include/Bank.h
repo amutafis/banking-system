@@ -65,6 +65,12 @@ public:
     bool deposit(string iban, double amount);
     bool withdraw(string iban, double amount);
 
+    // ----- Преводи -----
+    // Вътрешен превод между две сметки в системата.
+    bool transferInternal(string fromIban, string toIban, double amount);
+    // Външен превод към IBAN извън системата.
+    bool transferExternal(string fromIban, string toIban, double amount);
+
     // ----- История на транзакции -----
     void listAllTransactions() const;
     void listTransactionsOfAccount(string iban) const;
